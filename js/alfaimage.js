@@ -22,15 +22,16 @@ function handleFiles(e) {
     ctx.drawImage(img, 0, 0);   
         
     var rgba = [];
+    var convertedCharacters = [];
     var imageWidth = img.width;
     var imageHeight = img.height;
 
     var imagePixels = ctx.getImageData(0,0,imageWidth,imageHeight);
     var pixels = imagePixels.data;
 
-    
-    printCharacters( getCharactersFromPixels(pixels, imageWidth, imageHeight) );
-        
+    convertedCharacters = getCharactersFromPixels(pixels, imageWidth, imageHeight);
+ 
+    printCharacters( convertedCharacters, imageWidth, imageHeight);       
   }
 
   img.src = url;
@@ -100,19 +101,42 @@ function getFromCharacterTable(index){
 }
 
 // Print characters on canvas
-function printCharacters(characters){
+function printCharacters(characters, width, height){
   var canvas = document.getElementById('result');
   var ctx = canvas.getContext("2d");
+  ctx.font= width/10 + "px Arial"; // Lucida Console is proving to be difficult to read.
+  //ctx.font = width/10 + "px Lucida Console";
 
-  for(var i = 0; i < 100; i++){
-    for(var j = 0; j < 100; j++){
-      ctx.fillText(characters[j+(i*100)], j*10, i*10);
+  for(var i = 0; i < height; i++){
+    for(var j = 0; j < width; j++){
+      ctx.fillText(characters[j+(i*height)], j*10, i*10);
     }
   }
 }
 
 
+function saveImage(){
+  canvas = document.getElementById('result'); // output canvas
 
+  // 1. Canvas to blobl
+  // 2. Create url for canvas image (blob)
+  // 3. Creates a temporary a element, sets name, append to button
+  // 4. Remove link after click
+  canvas.toBlob(function(blob){
+
+    var uri = URL.createObjectURL(blob); 
+
+    var link = document.createElement("a");
+    link.download = 'alfaimage.png';
+    link.href = uri;
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    delete link;
+  });  
+}
 
 
 
