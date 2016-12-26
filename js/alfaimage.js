@@ -1,4 +1,9 @@
 var URL = window.webkitURL || window.URL;
+var canvas;
+var multiplier = 8;
+var charTable = ["Q","W","M","B","N","D","R","O","G","H","E",
+             "K","A","P","U","S","X","Z","V","C","I","F","Y","T","J","L"];
+var bw = true;
 
 window.onload = function() {
   var input = document.getElementById('uploadimage');
@@ -7,20 +12,28 @@ window.onload = function() {
 
 // Called on images received from input
 function handleFiles(e) {
-  var canvas = document.createElement('canvas');
-    
-  var ctx = canvas.getContext('2d');
-  ctx.mozImageSmoothingEnabled = false;
-  ctx.webkitImageSmoothingEnabled = false;
-  ctx.msImageSmoothingEnabled = false;
-  ctx.imageSmoothingEnabled = false;
+
 
   var url = URL.createObjectURL(e.target.files[0]);
   var img = new Image();
 
   img.onload = function() {
-    ctx.drawImage(img, 0, 0);   
-        
+    canvas = document.createElement('canvas');
+
+    canvas.width = img.width * multiplier;
+    canvas.height = img.height * multiplier;
+    canvas.style.background = "#ffffff";
+
+    var ctx = canvas.getContext('2d');
+
+    ctx.mozImageSmoothingEnabled = false;
+    ctx.webkitImageSmoothingEnabled = false;
+    ctx.msImageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = false;
+
+
+    ctx.drawImage(img, 0, 0);
+
     var rgba = [];
     var convertedCharacters = [];
     var imageWidth = img.width;
@@ -30,8 +43,8 @@ function handleFiles(e) {
     var pixels = imagePixels.data;
 
     convertedCharacters = getCharactersFromPixels(pixels, imageWidth, imageHeight);
- 
-    printCharacters( convertedCharacters, imageWidth, imageHeight);       
+
+    printCharacters( convertedCharacters, imageWidth, imageHeight);
   }
 
   img.src = url;
@@ -56,9 +69,9 @@ function convertToHSL(r, g, b){
       case g: h = (b - r) / d + 2; break;
       case b: h = (r - g) / d + 4; break;
     }
-  
+
   h /= 6;
-  
+
   }
 
   return {h:h, s:s, l:l};
@@ -90,41 +103,39 @@ function getCharacterBasedOnLightness(lightnessValue){
 // Based on tests!
 // Ordered from lighter to darker
 function getFromCharacterTable(index){
-  var table = ["Q","W","M","B","N","D","R","O","G","H","E",
-               "K","A","P","U","S","X","Z","V","C","I","F","Y","T","J","L"];
-
-  if(index === table.length){
-    return table[index-1];
+  if(index === charTable.length){
+    return charTable[index-1];
   }else{
-    return table[index];
+    return charTable[index];
   }
 }
 
 // Print characters on canvas
 function printCharacters(characters, width, height){
-  var canvas = document.getElementById('result');
+  //var canvas = document.getElementById('result');
   var ctx = canvas.getContext("2d");
-  ctx.font= width/10 + "px Arial"; // Lucida Console is proving to be difficult to read.
-  //ctx.font = width/10 + "px Lucida Console";
+
+  //ctx.font= 10 + "px Arial"; // Lucida Console is proving to be difficult to read.
+  ctx.font = multiplier + "px Lucida Console";
+  //ctx.font = multiplier + "px Arial";
 
   for(var i = 0; i < height; i++){
     for(var j = 0; j < width; j++){
-      ctx.fillText(characters[j+(i*height)], j*10, i*10);
+
+      ctx.fillText(characters[j+(i*height)], j*multiplier, i*multiplier);
     }
   }
 }
 
 
 function saveImage(){
-  canvas = document.getElementById('result'); // output canvas
-
-  // 1. Canvas to blobl
+  // 1. Canvas to blob
   // 2. Create url for canvas image (blob)
   // 3. Creates a temporary a element, sets name, append to button
   // 4. Remove link after click
   canvas.toBlob(function(blob){
 
-    var uri = URL.createObjectURL(blob); 
+    var uri = URL.createObjectURL(blob);
 
     var link = document.createElement("a");
     link.download = 'alfaimage.png';
@@ -135,17 +146,5 @@ function saveImage(){
 
     document.body.removeChild(link);
     delete link;
-  });  
+  });
 }
-
-
-
-
-
-
-
-
-
-
-
-

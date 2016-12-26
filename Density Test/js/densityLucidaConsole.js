@@ -1,5 +1,5 @@
 /* TESTING LUCIDA CONSOLE "PIXEL DENSITY"
- * 
+ *
  * In this context, "pixel density" is the amount of black pixels the image contains.
  * That is, the more space is occupied by the character in black pixels, the larger its density.
  * This density is used to calculate what are characters appear darker given the same space,
@@ -17,7 +17,7 @@ var URL = window.webkitURL || window.URL;
 var input = document.getElementById('uploadimage');
 var LucidaLetters = [];
 var context = null;
-      
+
 window.onload = function() {
   console.log("Lucida boys");
   input.addEventListener('change', handleFiles, false);
@@ -51,13 +51,13 @@ function imageData(index, event){
   var img = new Image();
 
   img.onload = function() {
-    context.drawImage(img, 0, 0);   
-          
+    context.drawImage(img, 0, 0);
+
     var imagePixels = context.getImageData(0,0,img.width,img.height);
-    
+
     LucidaLetters.push({name:input.files[index].name})
-    letterDensity(imagePixels.data, LucidaLetters, index);        
-  
+    letterDensity(imagePixels.data, LucidaLetters, index);
+
     imageData(++index, event);
   }
 
@@ -141,23 +141,3 @@ function swap(items, firstIndex, secondIndex){
   items[firstIndex] = items[secondIndex];
   items[secondIndex] = temp;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
